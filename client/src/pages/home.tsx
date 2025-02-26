@@ -4,7 +4,7 @@ import WalletConnect from "@/components/WalletConnect";
 import { useWallet } from "@/lib/web3";
 
 export default function Home() {
-  const { account, connectWallet, error } = useWallet();
+  const { account, connectMetaMask, connectCoinbase, error, walletType } = useWallet();
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -21,8 +21,10 @@ export default function Home() {
           <CardContent>
             <WalletConnect
               account={account}
-              onConnect={connectWallet}
+              onConnectMetaMask={connectMetaMask}
+              onConnectCoinbase={connectCoinbase}
               error={error}
+              walletType={walletType}
             />
           </CardContent>
         </Card>
