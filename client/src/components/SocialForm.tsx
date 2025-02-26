@@ -1,100 +1,58 @@
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { insertUserSchema } from "@shared/schema";
-import { useMutation } from "@tanstack/react-query";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
-import { useLocation } from "wouter";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FaTwitter, FaTelegram } from "react-icons/fa";
 
 export default function SocialForm({ walletAddress }: { walletAddress: string }) {
-  const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm({
-    resolver: zodResolver(insertUserSchema),
-    defaultValues: {
-      walletAddress,
-      twitterHandle: "",
-      telegramHandle: "",
-    },
-  });
+  const startTwitterAuth = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch(`/api/auth/twitter?walletAddress=${walletAddress}`);
+      const data = await response.json();
 
-  const mutation = useMutation({
-    mutationFn: async (data: typeof form.getValues) => {
-      const res = await apiRequest("POST", "/api/users", data);
-      return res.json();
-    },
-    onSuccess: () => {
-      setLocation(`/dashboard/${walletAddress}`);
-    },
-    onError: () => {
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error("Failed to get Twitter auth URL");
+      }
+    } catch (error) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to submit social handles",
+        description: "Failed to initiate Twitter authentication",
       });
-    },
-  });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit((data) => mutation.mutate(data))}
-        className="space-y-4"
-      >
-        <FormField
-          control={form.control}
-          name="twitterHandle"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="flex items-center gap-2">
-                <FaTwitter className="text-[#1DA1F2]" />
-                Twitter Handle
-              </FormLabel>
-              <FormControl>
-                <Input {...field} placeholder="@username" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="telegramHandle"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="flex items-center gap-2">
-                <FaTelegram className="text-[#0088cc]" />
-                Telegram Handle
-              </FormLabel>
-              <FormControl>
-                <Input {...field} placeholder="@username" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+    <Card>
+      <CardContent className="pt-6 space-y-4">
+        <Button
+          onClick={startTwitterAuth}
+          className="w-full"
+          variant="outline"
+          disabled={isLoading}
+        >
+          <FaTwitter className="mr-2 text-[#1DA1F2]" />
+          {isLoading ? "Connecting..." : "Connect with Twitter"}
+        </Button>
 
         <Button
-          type="submit"
           className="w-full"
-          disabled={mutation.isPending}
+          variant="outline"
+          disabled
         >
-          {mutation.isPending ? "Analyzing..." : "Start Analysis"}
+          <FaTelegram className="mr-2 text-[#0088cc]" />
+          Connect with Telegram (Coming Soon)
         </Button>
-      </form>
-    </Form>
+      </CardContent>
+    </Card>
   );
 }

@@ -3,8 +3,66 @@ import { createServer } from "http";
 import { storage } from "./storage";
 import { insertUserSchema } from "@shared/schema";
 import { z } from "zod";
+import { getAuthLink, handleCallback } from "./services/twitter";
+import { nanoid } from "nanoid";
+
+declare module "express-session" {
+  interface SessionData {
+    codeVerifier?: string;
+    state?: string;
+    walletAddress?: string;
+  }
+}
 
 export async function registerRoutes(app: Express) {
+  // Twitter OAuth Routes
+  app.get("/api/auth/twitter", async (req, res) => {
+    try {
+      const state = nanoid();
+      const { url, codeVerifier } = await getAuthLink(state);
+
+      req.session.codeVerifier = codeVerifier;
+      req.session.state = state;
+      req.session.walletAddress = req.query.walletAddress as string;
+
+      res.json({ url });
+    } catch (error) {
+      console.error("Twitter auth error:", error);
+      res.status(500).json({ error: "Failed to initiate Twitter auth" });
+    }
+  });
+
+  app.get("/api/auth/twitter/callback", async (req, res) => {
+    try {
+      const { code, state } = req.query;
+      const { codeVerifier, state: savedState, walletAddress } = req.session;
+
+      if (!code || !state || !codeVerifier || state !== savedState) {
+        throw new Error("Invalid auth callback");
+      }
+
+      const { user } = await handleCallback(code as string, codeVerifier);
+
+      // Create or update user with Twitter handle
+      try {
+        const userData = insertUserSchema.parse({
+          walletAddress,
+          twitterHandle: user.username,
+          telegramHandle: "placeholder" // TODO: Add Telegram integration
+        });
+
+        await storage.createUser(userData);
+        res.redirect(`/dashboard/${walletAddress}`);
+      } catch (error) {
+        res.status(400).json({ error: "Invalid user data" });
+      }
+    } catch (error) {
+      console.error("Twitter callback error:", error);
+      res.status(500).json({ error: "Failed to complete Twitter auth" });
+    }
+  });
+
+  // Existing routes
   app.post("/api/users", async (req, res) => {
     try {
       const userData = insertUserSchema.parse(req.body);
