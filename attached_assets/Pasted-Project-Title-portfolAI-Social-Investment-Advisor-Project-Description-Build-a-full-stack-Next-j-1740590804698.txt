@@ -1,0 +1,63 @@
+Project Title:
+portfolAI – Social Investment Advisor
+
+Project Description:
+Build a full-stack Next.js proof-of-concept app that collects a user's social media handles (Twitter & Telegram) and connects their crypto wallet with one click (via MetaMask). The app then uses Oort AI Agent to analyze the collected public data—inferring risk tolerance and recommending which asset(s) to invest in—all without a direct questionnaire.
+
+Features to Implement:
+
+User Data Collection:
+
+Social Media Input:
+Create input fields for users to enter their Twitter and Telegram handles.
+Use public APIs (or placeholder/mock functions) to fetch recent tweets and Telegram activity.
+Crypto Wallet Connection:
+Integrate a one-click wallet connection using MetaMask.
+Retrieve and display the user's public wallet address and basic wallet data.
+AI-Powered Analysis:
+
+Oort AI Agent Integration:
+Connect to the Oort AI Agent (refer to Oort AI Docs) to send collected social and wallet data.
+Let Oort AI process the data to automatically infer risk tolerance and generate personalized asset recommendations.
+User Interface & Dashboard:
+
+Landing Page:
+Design a modern, clean landing page featuring the portfolAI logo and a brief tagline.
+Provide clear instructions for inputting social handles and connecting a wallet.
+Results Dashboard:
+After data analysis, display a dashboard with:
+The inferred risk tolerance.
+Personalized asset recommendations.
+Visual elements like charts or icons to illustrate results.
+Design Style:
+Keep the UI minimalistic, responsive, and appealing with a modern color palette (e.g., deep blue with vibrant teal/green accents).
+API & Environment Setup:
+
+Environment Variables:
+Securely store API keys for Twitter, Telegram, and Oort AI using environment variables.
+Backend API Routes (Next.js):
+Set up API routes to fetch social data and relay it to Oort AI.
+Create endpoints that handle wallet connection responses if needed.
+Technical Stack:
+
+Front-End & Back-End: Next.js (React for UI, API routes for backend)
+Wallet Integration: MetaMask (using web3.js or ethers.js)
+AI Integration: Oort AI Agent (via their API)
+Styling: Use CSS frameworks like Tailwind CSS or styled-components for a modern look.
+Development Steps:
+
+Project Setup:
+Initialize a new Next.js project on Replit.
+Configure your project with environment variables for API keys.
+Front-End:
+Create pages/components for the landing page, data input forms, and results dashboard.
+Implement MetaMask integration for one-click wallet connection.
+Back-End/API Routes:
+Develop API routes to fetch data from Twitter and Telegram (or use placeholders during initial development).
+Build an API route to send collected data to Oort AI and handle the response.
+Oort AI Integration:
+Follow the Oort AI documentation to integrate their AI agent into your app.
+Ensure that the risk and asset recommendations are received and displayed properly on the dashboard.
+Testing & Deployment:
+Test the complete data flow—from user input and wallet connection to AI analysis and results display.
+Deploy the project on Replit and verify responsiveness on different devices.
