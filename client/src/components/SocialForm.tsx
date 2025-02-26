@@ -1,57 +1,87 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FaTwitter, FaTelegram } from "react-icons/fa";
+import { FaTwitter, FaTelegram, FaDiscord, FaLinkedin, FaReddit, FaGithub, FaTiktok, FaInstagram, FaFacebook, FaYoutube } from "react-icons/fa";
 
-export default function SocialForm({ walletAddress }: { walletAddress: string }) {
+type SocialPlatform = {
+  name: string;
+  icon: React.ReactNode;
+  color: string;
+  isEnabled: boolean;
+};
+
+export default function SocialForm({ walletAddress }: { walletAddress?: string }) {
   const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState<string | null>(null);
 
-  const startTwitterAuth = async () => {
+  const socials: SocialPlatform[] = [
+    { name: "Twitter", icon: <FaTwitter />, color: "#1DA1F2", isEnabled: true },
+    { name: "Telegram", icon: <FaTelegram />, color: "#0088cc", isEnabled: true },
+    { name: "Discord", icon: <FaDiscord />, color: "#5865F2", isEnabled: true },
+    { name: "LinkedIn", icon: <FaLinkedin />, color: "#0A66C2", isEnabled: true },
+    { name: "Reddit", icon: <FaReddit />, color: "#FF4500", isEnabled: true },
+    { name: "GitHub", icon: <FaGithub />, color: "#333", isEnabled: true },
+    { name: "TikTok", icon: <FaTiktok />, color: "#000000", isEnabled: true },
+    { name: "Instagram", icon: <FaInstagram />, color: "#E4405F", isEnabled: true },
+    { name: "Facebook", icon: <FaFacebook />, color: "#1877F2", isEnabled: true },
+    { name: "YouTube", icon: <FaYoutube />, color: "#FF0000", isEnabled: true },
+  ];
+
+  const handleConnect = async (platform: string) => {
     try {
-      setIsLoading(true);
-      const response = await fetch(`/api/auth/twitter?walletAddress=${walletAddress}`);
+      setLoading(platform);
+      const params = new URLSearchParams();
+      if (walletAddress) {
+        params.append('walletAddress', walletAddress);
+      }
+
+      const response = await fetch(`/api/auth/${platform.toLowerCase()}?${params}`);
       const data = await response.json();
 
       if (data.url) {
         window.location.href = data.url;
       } else {
-        throw new Error("Failed to get Twitter auth URL");
+        throw new Error(`Failed to get ${platform} auth URL`);
       }
     } catch (error) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to initiate Twitter authentication",
+        description: `Failed to initiate ${platform} authentication`,
       });
     } finally {
-      setIsLoading(false);
+      setLoading(null);
     }
   };
 
   return (
     <Card>
-      <CardContent className="pt-6 space-y-4">
-        <Button
-          onClick={startTwitterAuth}
-          className="w-full"
-          variant="outline"
-          disabled={isLoading}
-        >
-          <FaTwitter className="mr-2 text-[#1DA1F2]" />
-          {isLoading ? "Connecting..." : "Connect with Twitter"}
-        </Button>
-
-        <Button
-          className="w-full"
-          variant="outline"
-          disabled
-        >
-          <FaTelegram className="mr-2 text-[#0088cc]" />
-          Connect with Telegram (Coming Soon)
-        </Button>
+      <CardHeader>
+        <CardTitle className="text-2xl font-bold">
+          Connect Your Social Media
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="grid gap-4 sm:grid-cols-2">
+        {socials.map((social) => (
+          <Button
+            key={social.name}
+            onClick={() => handleConnect(social.name)}
+            className="w-full"
+            variant="outline"
+            disabled={!social.isEnabled || loading === social.name}
+            style={{
+              "--social-color": social.color,
+            } as React.CSSProperties}
+          >
+            <span className="mr-2" style={{ color: social.color }}>
+              {social.icon}
+            </span>
+            {loading === social.name
+              ? "Connecting..."
+              : `Connect ${social.name}`}
+          </Button>
+        ))}
       </CardContent>
     </Card>
   );

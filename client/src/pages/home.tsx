@@ -8,24 +8,27 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-lg">
-        <CardHeader>
-          <CardTitle className="text-3xl font-bold text-center text-primary">
-            portfolAI
-          </CardTitle>
-          <p className="text-center text-muted-foreground mt-2">
-            Your AI-Powered Investment Advisor
-          </p>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <WalletConnect
-            account={account}
-            onConnect={connectWallet}
-            error={error}
-          />
-          {account && <SocialForm walletAddress={account} />}
-        </CardContent>
-      </Card>
+      <div className="w-full max-w-4xl space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-3xl font-bold text-center text-primary">
+              portfolAI
+            </CardTitle>
+            <p className="text-center text-muted-foreground mt-2">
+              Your AI-Powered Investment Advisor
+            </p>
+          </CardHeader>
+          <CardContent>
+            <WalletConnect
+              account={account}
+              onConnect={connectWallet}
+              error={error}
+            />
+          </CardContent>
+        </Card>
+
+        <SocialForm walletAddress={account ?? undefined} />
+      </div>
     </div>
   );
 }

@@ -22,8 +22,18 @@ export class MemStorage implements IStorage {
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentId++;
     const user: User = {
-      ...insertUser,
       id,
+      walletAddress: insertUser.walletAddress ?? null,
+      twitterHandle: insertUser.twitterHandle ?? null,
+      telegramHandle: insertUser.telegramHandle ?? null,
+      discordHandle: insertUser.discordHandle ?? null,
+      linkedinHandle: insertUser.linkedinHandle ?? null,
+      redditHandle: insertUser.redditHandle ?? null,
+      githubHandle: insertUser.githubHandle ?? null,
+      tiktokHandle: insertUser.tiktokHandle ?? null,
+      instagramHandle: insertUser.instagramHandle ?? null,
+      facebookHandle: insertUser.facebookHandle ?? null,
+      youtubeHandle: insertUser.youtubeHandle ?? null,
       riskProfile: null,
       recommendations: null,
     };
@@ -44,7 +54,7 @@ export class MemStorage implements IStorage {
   ): Promise<User> {
     const user = await this.getUser(walletAddress);
     if (!user) throw new Error("User not found");
-    
+
     const updatedUser = {
       ...user,
       riskProfile,
