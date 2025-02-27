@@ -19,6 +19,16 @@ export default function WalletConnect({
   error,
   walletType,
 }: WalletConnectProps) {
+  const handleMetaMaskClick = () => {
+    console.log("Connecting to MetaMask...");
+    onConnectMetaMask();
+  };
+
+  const handleCoinbaseClick = () => {
+    console.log("Connecting to Coinbase...");
+    onConnectCoinbase();
+  };
+
   return (
     <div className="space-y-4">
       {error && (
@@ -39,7 +49,7 @@ export default function WalletConnect({
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
           <Button
-            onClick={onConnectMetaMask}
+            onClick={handleMetaMaskClick}
             className="w-full"
             variant="outline"
             size="lg"
@@ -49,7 +59,7 @@ export default function WalletConnect({
           </Button>
 
           <Button
-            onClick={onConnectCoinbase}
+            onClick={handleCoinbaseClick}
             className="w-full"
             variant="outline"
             size="lg"

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import CoinbaseWalletSDK from '@coinbase/wallet-sdk';
+import detectEthereumProvider from '@metamask/detect-provider';
 
 declare global {
   interface Window {
@@ -15,21 +16,28 @@ export function useWallet() {
   const [walletType, setWalletType] = useState<WalletType | null>(null);
 
   const connectMetaMask = async () => {
-    if (!window.ethereum) {
-      setError("Please install MetaMask");
-      return;
-    }
-
     try {
+      const provider = await detectEthereumProvider();
+
+      if (!provider) {
+        setError("Please install MetaMask");
+        return;
+      }
+
       const accounts = await window.ethereum.request({
         method: "eth_requestAccounts"
       });
-      setAccount(accounts[0]);
-      setWalletType('metamask');
-      setError(null);
-    } catch (err) {
-      setError("Failed to connect MetaMask");
-      console.error(err);
+
+      if (accounts && accounts.length > 0) {
+        setAccount(accounts[0]);
+        setWalletType('metamask');
+        setError(null);
+      } else {
+        throw new Error("No accounts found");
+      }
+    } catch (err: any) {
+      console.error("MetaMask connection error:", err);
+      setError(err.message || "Failed to connect MetaMask");
     }
   };
 
@@ -41,17 +49,22 @@ export function useWallet() {
         darkMode: false
       });
 
-      const ethereum = coinbaseWallet.makeWeb3Provider();
+      const ethereum = coinbaseWallet.makeWeb3Provider("https://mainnet.infura.io/v3/your-infura-id", 1); // Replace 'your-infura-id' with your Infura project ID
+
       const accounts = await ethereum.request({
         method: "eth_requestAccounts"
       });
 
-      setAccount(accounts[0]);
-      setWalletType('coinbase');
-      setError(null);
-    } catch (err) {
-      setError("Failed to connect Coinbase Wallet");
-      console.error(err);
+      if (accounts && accounts.length > 0) {
+        setAccount(accounts[0]);
+        setWalletType('coinbase');
+        setError(null);
+      } else {
+        throw new Error("No accounts found");
+      }
+    } catch (err: any) {
+      console.error("Coinbase Wallet connection error:", err);
+      setError(err.message || "Failed to connect Coinbase Wallet");
     }
   };
 
