@@ -34,15 +34,6 @@ export default function SocialForm({ walletAddress }: { walletAddress?: string }
   ];
 
   const handleConnect = async (platform: string) => {
-    if (!walletAddress) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Please connect your wallet first",
-      });
-      return;
-    }
-
     setLoading(platform);
 
     // Simulate X authentication popup
@@ -99,8 +90,8 @@ export default function SocialForm({ walletAddress }: { walletAddress?: string }
         const checkClosed = setInterval(async () => {
           if (popup.closed) {
             clearInterval(checkClosed);
-            // Generate mock analysis
-            const mockData = await simulateAnalysis(walletAddress);
+            // Generate mock analysis using wallet address if available, otherwise use a default
+            const mockData = await simulateAnalysis(walletAddress || "default");
             setAnalysis(mockData);
             setLoading(null);
 
