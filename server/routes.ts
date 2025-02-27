@@ -27,6 +27,7 @@ export async function registerRoutes(app: Express) {
       const state = nanoid();
       const { url, codeVerifier } = await getAuthLink(state);
 
+      // Store in session
       req.session.codeVerifier = codeVerifier;
       req.session.state = state;
       req.session.walletAddress = req.query.walletAddress as string;
