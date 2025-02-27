@@ -65,13 +65,6 @@ process.on('uncaughtException', (err) => {
 
 (async () => {
   try {
-    // Verify X API credentials are loaded
-    if (!process.env.TWITTER_API_KEY || !process.env.TWITTER_API_SECRET) {
-      log("Warning: X API credentials are missing");
-    } else {
-      log("X API credentials are configured");
-    }
-
     const server = await registerRoutes(app);
 
     app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
@@ -94,7 +87,6 @@ process.on('uncaughtException', (err) => {
       reusePort: true,
     }, () => {
       log(`Server running on port ${port}`);
-      log(`X API Configuration: ${process.env.TWITTER_API_KEY ? 'Present' : 'Missing'}`);
     });
   } catch (error) {
     console.error("Failed to start server:", error);
