@@ -23,6 +23,7 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { SiRobinhood } from "react-icons/si";
 import { Building2 } from "lucide-react"; // Using a more generic icon for IBKR
+import { useLocation } from "wouter";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
@@ -32,6 +33,7 @@ export default function AssetRecommendations({
   recommendations: NonNullable<User["recommendations"]>;
 }) {
   const { toast } = useToast();
+  const [, navigate] = useLocation();
   const [investmentAmount, setInvestmentAmount] = useState("");
   const [showAllocation, setShowAllocation] = useState(false);
   const [selectedBroker, setSelectedBroker] = useState<"robinhood" | "ibkr" | null>(null);
@@ -112,8 +114,21 @@ export default function AssetRecommendations({
             description: `Successfully connected to ${broker === "robinhood" ? "Robinhood" : "IBKR"}`,
           });
 
-          // Show allocation after successful connection
-          setShowAllocation(true);
+          // Create allocations data with amounts
+          const amount = parseFloat(investmentAmount);
+          const allocations = recommendations.assets.map(asset => ({
+            ...asset,
+            amount: (amount * asset.percentage) / 100
+          }));
+
+          // Navigate to portfolio page with data
+          const searchParams = new URLSearchParams({
+            broker: broker === "robinhood" ? "Robinhood" : "IBKR",
+            amount: investmentAmount,
+            allocations: encodeURIComponent(JSON.stringify(allocations))
+          });
+
+          navigate(`/portfolio?${searchParams.toString()}`);
         }
       }, 500);
     }

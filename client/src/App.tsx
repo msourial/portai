@@ -4,6 +4,7 @@ import { queryClient } from "./lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
 import Home from "@/pages/home";
 import Dashboard from "@/pages/dashboard";
+import Portfolio from "@/pages/portfolio";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -13,6 +14,7 @@ function Router() {
       <Route path="/dashboard/:walletAddress">
         {(params) => <Dashboard walletAddress={params.walletAddress} />}
       </Route>
+      <Route path="/portfolio" component={Portfolio} />
       <Route component={NotFound} />
     </Switch>
   );
