@@ -37,7 +37,6 @@ export default function SocialForm({ walletAddress }: { walletAddress?: string }
         params.append('walletAddress', walletAddress);
       }
 
-      // For X (formerly Twitter), use lowercase 'twitter' in the API path
       const apiPath = platform.toLowerCase() === 'x' ? 'twitter' : platform.toLowerCase();
 
       console.log(`Connecting to ${platform}...`);
@@ -52,7 +51,6 @@ export default function SocialForm({ walletAddress }: { walletAddress?: string }
       if (!response.ok) {
         const errorData = await response.json();
         if (response.status === 503 && platform.toLowerCase() === 'x') {
-          // Redirect to config page if Twitter API is not configured
           window.location.href = '/config';
           return;
         }
@@ -62,10 +60,33 @@ export default function SocialForm({ walletAddress }: { walletAddress?: string }
       const data = await response.json();
 
       if (data.url) {
-        // Add a small delay before redirecting to ensure the state is saved
-        await new Promise(resolve => setTimeout(resolve, 500));
-        // Open in same window
-        window.location.href = data.url;
+        // Open popup window for authentication
+        const width = 600;
+        const height = 600;
+        const left = window.innerWidth / 2 - width / 2;
+        const top = window.innerHeight / 2 - height / 2;
+
+        const popup = window.open(
+          data.url,
+          'Connect to X',
+          `width=${width},height=${height},left=${left},top=${top},popup=1`
+        );
+
+        // Check if popup was blocked
+        if (!popup || popup.closed || typeof popup.closed === 'undefined') {
+          throw new Error('Popup was blocked. Please allow popups and try again.');
+        }
+
+        // Poll the popup to check when it's closed
+        const checkPopup = setInterval(() => {
+          if (!popup || popup.closed) {
+            clearInterval(checkPopup);
+            setLoading(null);
+            // Refresh the page to update the user's state
+            window.location.reload();
+          }
+        }, 1000);
+
       } else {
         throw new Error(`Failed to get ${platform} auth URL`);
       }
@@ -76,7 +97,6 @@ export default function SocialForm({ walletAddress }: { walletAddress?: string }
         title: "Connection Error",
         description: error instanceof Error ? error.message : `Failed to initiate ${platform} authentication. Please try again later.`,
       });
-    } finally {
       setLoading(null);
     }
   };

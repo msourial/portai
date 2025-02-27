@@ -90,15 +90,47 @@ export async function registerRoutes(app: Express) {
         });
 
         await storage.createUser(userData);
-        res.redirect(`/dashboard/${walletAddress}`);
+
+        // Send HTML that closes the popup
+        res.send(`
+          <html>
+            <body>
+              <script>
+                window.close();
+                if (window.opener) {
+                  window.opener.location.reload();
+                }
+              </script>
+              <p>Authentication successful! You can close this window.</p>
+            </body>
+          </html>
+        `);
       } catch (error) {
         console.error("User creation error:", error);
-        res.status(400).json({ error: "Invalid user data" });
+        res.status(400).send(`
+          <html>
+            <body>
+              <script>
+                window.close();
+              </script>
+              <p>Authentication failed. Please try again.</p>
+            </body>
+          </html>
+        `);
       }
     } catch (error) {
       console.error("Twitter callback error:", error);
       const errorMessage = error instanceof Error ? error.message : "Failed to complete Twitter authentication";
-      res.status(500).json({ error: errorMessage });
+      res.status(500).send(`
+        <html>
+          <body>
+            <script>
+              window.close();
+            </script>
+            <p>Error: ${errorMessage}</p>
+          </body>
+        </html>
+      `);
     }
   });
 
