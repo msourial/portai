@@ -45,11 +45,12 @@ export function useWallet() {
     try {
       const coinbaseWallet = new CoinbaseWalletSDK({
         appName: "portfolAI",
-        appLogoUrl: "", // Add your app logo URL here
-        darkMode: false
+        appLogoUrl: undefined,
+        chainId: 1,
+        darkMode: undefined
       });
 
-      const ethereum = coinbaseWallet.makeWeb3Provider("https://mainnet.infura.io/v3/your-infura-id", 1); // Replace 'your-infura-id' with your Infura project ID
+      const ethereum = coinbaseWallet.makeWeb3Provider();
 
       const accounts = await ethereum.request({
         method: "eth_requestAccounts"
