@@ -6,7 +6,13 @@ if (!process.env.TWITTER_API_KEY || !process.env.TWITTER_API_SECRET) {
 
 const CLIENT_ID = process.env.TWITTER_API_KEY;
 const CLIENT_SECRET = process.env.TWITTER_API_SECRET;
-const CALLBACK_URL = "http://localhost:5000/api/auth/twitter/callback";
+
+// Get the Replit domain from environment variables
+const REPLIT_DOMAIN = process.env.REPL_SLUG ? 
+  `https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co` : 
+  'http://localhost:5000';
+
+const CALLBACK_URL = `${REPLIT_DOMAIN}/api/auth/twitter/callback`;
 
 const client = new TwitterApi({ clientId: CLIENT_ID, clientSecret: CLIENT_SECRET });
 
@@ -15,7 +21,7 @@ export async function getAuthLink(state: string) {
     CALLBACK_URL,
     { scope: ["tweet.read", "users.read"] }
   );
-  
+
   return { url, codeVerifier, state: authState };
 }
 
