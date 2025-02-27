@@ -3,6 +3,27 @@ import session from "express-session";
 import MemoryStore from "memorystore";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import fs from 'fs';
+import path from 'path';
+
+// Load environment variables from .env file
+try {
+  const envPath = path.resolve(process.cwd(), '.env');
+  if (fs.existsSync(envPath)) {
+    const envConfig = fs.readFileSync(envPath, 'utf8')
+      .split('\n')
+      .filter(line => line.trim() !== '' && !line.startsWith('#'))
+      .forEach(line => {
+        const [key, value] = line.split('=');
+        if (key && value) {
+          process.env[key.trim()] = value.trim();
+        }
+      });
+    log("Environment variables loaded from .env file");
+  }
+} catch (error) {
+  console.error("Error loading .env file:", error);
+}
 
 const app = express();
 const SessionStore = MemoryStore(session);
