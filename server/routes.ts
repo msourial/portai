@@ -25,20 +25,29 @@ export async function registerRoutes(app: Express) {
       }
 
       const state = nanoid();
-      const { url, codeVerifier } = await getAuthLink(state);
 
-      // Store in session
-      req.session.codeVerifier = codeVerifier;
-      req.session.state = state;
-      req.session.walletAddress = req.query.walletAddress as string;
+      try {
+        const { url, codeVerifier } = await getAuthLink(state);
 
-      console.log("Twitter auth initiated:", {
-        state,
-        walletAddress: req.query.walletAddress,
-        url
-      });
+        // Store in session
+        req.session.codeVerifier = codeVerifier;
+        req.session.state = state;
+        req.session.walletAddress = req.query.walletAddress as string;
 
-      res.json({ url });
+        console.log("Twitter auth initiated:", {
+          state,
+          walletAddress: req.query.walletAddress,
+          url
+        });
+
+        res.json({ url });
+      } catch (authError) {
+        console.error("Failed to generate auth URL:", authError);
+        res.status(500).json({ 
+          error: "Failed to initialize X authentication",
+          details: authError instanceof Error ? authError.message : "Unknown error"
+        });
+      }
     } catch (error) {
       console.error("Twitter auth error:", error);
       const errorMessage = error instanceof Error ? error.message : "Failed to initiate Twitter auth";

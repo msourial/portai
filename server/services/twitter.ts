@@ -36,7 +36,14 @@ export async function getAuthLink(state: string) {
 
     return { url, codeVerifier, state: authState };
   } catch (error) {
-    console.error("Error generating OAuth link:", error);
+    // Enhanced error logging
+    console.error("Error generating OAuth link:", {
+      error: error instanceof Error ? error.message : error,
+      clientIdPresent: !!CLIENT_ID,
+      clientSecretPresent: !!CLIENT_SECRET,
+      domain: REPLIT_DOMAIN,
+      callback: CALLBACK_URL
+    });
     throw error;
   }
 }
@@ -58,7 +65,13 @@ export async function handleCallback(code: string, codeVerifier: string) {
     const { data: user } = await loggedClient.v2.me();
     return { user, accessToken };
   } catch (error) {
-    console.error("Callback processing error:", error);
+    // Enhanced error logging
+    console.error("Callback processing error:", {
+      error: error instanceof Error ? error.message : error,
+      callbackUrl: CALLBACK_URL,
+      codePresent: !!code,
+      verifierPresent: !!codeVerifier
+    });
     throw error;
   }
 }

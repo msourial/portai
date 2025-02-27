@@ -50,13 +50,13 @@ export default function SocialForm({ walletAddress }: { walletAddress?: string }
       });
 
       if (!response.ok) {
-        const errorData = await response.text();
+        const errorData = await response.json();
         if (response.status === 503 && platform.toLowerCase() === 'x') {
           // Redirect to config page if Twitter API is not configured
           window.location.href = '/config';
           return;
         }
-        throw new Error(errorData || `Failed to connect to ${platform}`);
+        throw new Error(errorData.error || `Failed to connect to ${platform}`);
       }
 
       const data = await response.json();
