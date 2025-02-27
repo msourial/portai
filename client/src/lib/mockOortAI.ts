@@ -50,14 +50,8 @@ export async function simulateAnalysis(walletAddress: string) {
       {
         symbol: "DBA",
         name: "Invesco DB Agriculture Fund",
-        percentage: tolerance === "low" ? 5 : 7,
-        reason: "Your recent interactions with sustainable agriculture and food security content suggest interest in agricultural commodities. This fund provides exposure to essential agricultural futures markets."
-      },
-      {
-        symbol: "VEGI",
-        name: "iShares MSCI Global Agriculture",
-        percentage: tolerance === "low" ? 5 : 8,
-        reason: "Based on your follows of sustainable farming initiatives and agricultural technology companies, this ETF aligns with your interest in the future of agriculture and food production."
+        percentage: tolerance === "low" ? 10 : tolerance === "medium" ? 12 : 15,
+        reason: "Your recent interactions with sustainable agriculture and food security content, combined with following agricultural technology companies and sustainable farming initiatives, suggest strong interest in the agricultural sector. This fund provides comprehensive exposure to essential agricultural commodities and the future of food production."
       },
       // Cryptocurrencies
       {
