@@ -23,15 +23,16 @@ export async function getAuthLink(state: string) {
     const { url, codeVerifier, state: authState } = await client.generateOAuth2AuthLink(
       CALLBACK_URL,
       {
-        scope: ['tweet.read', 'users.read'],
+        scope: ['tweet.read', 'users.read', 'follows.read'],
         state,
       }
     );
 
     console.log("OAuth2 Details:", {
       callbackUrl: CALLBACK_URL,
-      scopes: ['tweet.read', 'users.read'],
+      scopes: ['tweet.read', 'users.read', 'follows.read'],
       state,
+      authUrl: url
     });
 
     return { url, codeVerifier, state: authState };
