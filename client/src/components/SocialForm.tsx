@@ -42,6 +42,12 @@ export default function SocialForm({ walletAddress }: { walletAddress?: string }
 
       console.log(`Connecting to ${platform}...`);
       const response = await fetch(`/api/auth/${apiPath}?${params}`);
+
+      if (!response.ok) {
+        const errorData = await response.text();
+        throw new Error(errorData || `Failed to connect to ${platform}`);
+      }
+
       const data = await response.json();
 
       if (data.url) {
@@ -53,8 +59,8 @@ export default function SocialForm({ walletAddress }: { walletAddress?: string }
       console.error(`Error connecting to ${platform}:`, error);
       toast({
         variant: "destructive",
-        title: "Error",
-        description: `Failed to initiate ${platform} authentication`,
+        title: "Connection Error",
+        description: error instanceof Error ? error.message : `Failed to initiate ${platform} authentication. Please try again later.`,
       });
     } finally {
       setLoading(null);

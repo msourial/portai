@@ -25,10 +25,17 @@ export async function registerRoutes(app: Express) {
       req.session.state = state;
       req.session.walletAddress = req.query.walletAddress as string;
 
+      console.log("Twitter auth initiated:", {
+        state,
+        walletAddress: req.query.walletAddress,
+        url
+      });
+
       res.json({ url });
     } catch (error) {
       console.error("Twitter auth error:", error);
-      res.status(500).json({ error: "Failed to initiate Twitter auth" });
+      const errorMessage = error instanceof Error ? error.message : "Failed to initiate Twitter auth";
+      res.status(500).json({ error: errorMessage });
     }
   });
 
@@ -37,28 +44,45 @@ export async function registerRoutes(app: Express) {
       const { code, state } = req.query;
       const { codeVerifier, state: savedState, walletAddress } = req.session;
 
-      if (!code || !state || !codeVerifier || state !== savedState) {
-        throw new Error("Invalid auth callback");
+      console.log("Twitter callback received:", {
+        code: code ? "present" : "missing",
+        state,
+        savedState,
+        walletAddress,
+        codeVerifier: codeVerifier ? "present" : "missing"
+      });
+
+      if (!code) {
+        throw new Error("No authorization code received from Twitter");
+      }
+
+      if (!codeVerifier) {
+        throw new Error("No code verifier found in session");
+      }
+
+      if (state !== savedState) {
+        throw new Error("State mismatch - possible security issue");
       }
 
       const { user } = await handleCallback(code as string, codeVerifier);
 
-      // Create or update user with Twitter handle
       try {
         const userData = insertUserSchema.parse({
           walletAddress,
           twitterHandle: user.username,
-          telegramHandle: "placeholder" // TODO: Add Telegram integration
+          telegramHandle: null
         });
 
         await storage.createUser(userData);
         res.redirect(`/dashboard/${walletAddress}`);
       } catch (error) {
+        console.error("User creation error:", error);
         res.status(400).json({ error: "Invalid user data" });
       }
     } catch (error) {
       console.error("Twitter callback error:", error);
-      res.status(500).json({ error: "Failed to complete Twitter auth" });
+      const errorMessage = error instanceof Error ? error.message : "Failed to complete Twitter authentication";
+      res.status(500).json({ error: errorMessage });
     }
   });
 

@@ -19,19 +19,32 @@ const client = new TwitterApi({ clientId: CLIENT_ID, clientSecret: CLIENT_SECRET
 export async function getAuthLink(state: string) {
   const { url, codeVerifier, state: authState } = await client.generateOAuth2AuthLink(
     CALLBACK_URL,
-    { scope: ["tweet.read", "users.read"] }
+    { 
+      scope: [
+        "users.read",
+        "tweet.read",
+        "follows.read",
+        "offline.access"
+      ]
+    }
   );
 
+  console.log("Generated auth URL:", url);
   return { url, codeVerifier, state: authState };
 }
 
 export async function handleCallback(code: string, codeVerifier: string) {
-  const { client: loggedClient, accessToken } = await client.loginWithOAuth2({
-    code,
-    codeVerifier,
-    redirectUri: CALLBACK_URL,
-  });
+  try {
+    const { client: loggedClient, accessToken } = await client.loginWithOAuth2({
+      code,
+      codeVerifier,
+      redirectUri: CALLBACK_URL,
+    });
 
-  const { data: user } = await loggedClient.v2.me();
-  return { user, accessToken };
+    const { data: user } = await loggedClient.v2.me();
+    return { user, accessToken };
+  } catch (error) {
+    console.error("Twitter callback error:", error);
+    throw error;
+  }
 }
