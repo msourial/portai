@@ -86,6 +86,28 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Add this endpoint to handle saving the API keys
+  app.post("/api/config/twitter", async (req, res) => {
+    try {
+      const { apiKey, apiSecret } = req.body;
+
+      if (!apiKey || !apiSecret) {
+        res.status(400).json({ error: "API Key and Secret are required" });
+        return;
+      }
+
+      // Store the API keys securely
+      process.env.TWITTER_API_KEY = apiKey;
+      process.env.TWITTER_API_SECRET = apiSecret;
+
+      res.json({ message: "API keys saved successfully" });
+    } catch (error) {
+      console.error("Error saving Twitter API keys:", error);
+      res.status(500).json({ error: "Failed to save API keys" });
+    }
+  });
+
+
   // Existing routes
   app.post("/api/users", async (req, res) => {
     try {

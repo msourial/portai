@@ -45,6 +45,11 @@ export default function SocialForm({ walletAddress }: { walletAddress?: string }
 
       if (!response.ok) {
         const errorData = await response.text();
+        if (response.status === 503 && platform.toLowerCase() === 'x') {
+          // Redirect to config page if Twitter API is not configured
+          window.location.href = '/config';
+          return;
+        }
         throw new Error(errorData || `Failed to connect to ${platform}`);
       }
 
