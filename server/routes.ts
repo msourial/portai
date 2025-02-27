@@ -3,6 +3,7 @@ import { createServer } from "http";
 import { storage } from "./storage";
 import { insertUserSchema } from "@shared/schema";
 import { z } from "zod";
+import { simulateAnalysis } from "../client/src/lib/mockOortAI";
 
 export async function registerRoutes(app: Express) {
   // User management routes
@@ -17,66 +18,32 @@ export async function registerRoutes(app: Express) {
   });
 
   app.get("/api/users/:walletAddress", async (req, res) => {
-    const user = await storage.getUser(req.params.walletAddress);
-    if (!user) {
-      res.status(404).json({ error: "User not found" });
-      return;
-    }
-    res.json(user);
-  });
-
-  app.post("/api/analyze", async (req, res) => {
-    const schema = z.object({
-      walletAddress: z.string(),
-    });
-
     try {
-      const { walletAddress } = schema.parse(req.body);
-      const user = await storage.getUser(walletAddress);
-      if (!user) {
-        res.status(404).json({ error: "User not found" });
-        return;
+      let user = await storage.getUser(req.params.walletAddress);
+
+      // If user doesn't exist or doesn't have analysis, create mock analysis
+      if (!user || (!user.riskProfile && !user.recommendations)) {
+        const mockAnalysis = await simulateAnalysis(req.params.walletAddress);
+
+        // Create user if doesn't exist
+        if (!user) {
+          user = await storage.createUser({
+            walletAddress: req.params.walletAddress,
+          });
+        }
+
+        // Update with mock analysis
+        user = await storage.updateUserAnalysis(
+          req.params.walletAddress,
+          mockAnalysis.riskProfile,
+          mockAnalysis.recommendations
+        );
       }
 
-      // Mock risk profile and recommendations
-      const riskProfile = {
-        score: Math.random() * 100,
-        tolerance: ["low", "medium", "high"][Math.floor(Math.random() * 3)] as "low" | "medium" | "high",
-        factors: ["Social media activity", "Transaction history", "Portfolio diversity"],
-      };
-
-      const recommendations = {
-        assets: [
-          {
-            symbol: "ETH",
-            name: "Ethereum",
-            percentage: 40,
-            reason: "Strong foundation for DeFi applications",
-          },
-          {
-            symbol: "BTC",
-            name: "Bitcoin",
-            percentage: 30,
-            reason: "Store of value with institutional adoption",
-          },
-          {
-            symbol: "LINK",
-            name: "Chainlink",
-            percentage: 30,
-            reason: "Essential oracle infrastructure",
-          },
-        ],
-      };
-
-      const updatedUser = await storage.updateUserAnalysis(
-        walletAddress,
-        riskProfile,
-        recommendations
-      );
-
-      res.json(updatedUser);
+      res.json(user);
     } catch (error) {
-      res.status(400).json({ error: "Invalid request" });
+      console.error("Error getting user data:", error);
+      res.status(500).json({ error: "Failed to get user data" });
     }
   });
 
