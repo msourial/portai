@@ -21,14 +21,18 @@ export default function Portfolio() {
   const [portfolio, setPortfolio] = useState<PortfolioProps | null>(null);
 
   useEffect(() => {
-    // Get portfolio data from URL state
-    const searchParams = new URLSearchParams(location.split('?')[1]);
-    const portfolioData = {
-      broker: searchParams.get('broker') || '',
-      amount: searchParams.get('amount') || '',
-      allocations: JSON.parse(decodeURIComponent(searchParams.get('allocations') || '[]')),
-    };
-    setPortfolio(portfolioData as PortfolioProps);
+    try {
+      // Get portfolio data from URL state
+      const searchParams = new URLSearchParams(location.split('?')[1]);
+      const portfolioData = {
+        broker: searchParams.get('broker') || '',
+        amount: searchParams.get('amount') || '',
+        allocations: JSON.parse(decodeURIComponent(searchParams.get('allocations') || '[]')),
+      };
+      setPortfolio(portfolioData as PortfolioProps);
+    } catch (error) {
+      console.error("Error parsing portfolio data:", error);
+    }
   }, [location]);
 
   if (!portfolio) return null;
@@ -45,7 +49,7 @@ export default function Portfolio() {
           <CardHeader>
             <CardTitle className="text-3xl">Your Portfolio</CardTitle>
             <p className="text-muted-foreground">
-              Connected to {portfolio.broker} - Total Investment: ${parseFloat(portfolio.amount).toLocaleString()}
+              Connected to {portfolio.broker} - Total Investment: ${Number(portfolio.amount).toLocaleString()}
             </p>
           </CardHeader>
           <CardContent>
@@ -92,7 +96,7 @@ export default function Portfolio() {
                         </div>
                         <div className="text-right">
                           <div className="font-medium">
-                            ${asset.amount.toLocaleString()}
+                            ${asset.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                           </div>
                         </div>
                       </div>
@@ -120,7 +124,7 @@ export default function Portfolio() {
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span>Initial Investment</span>
-                <span>${parseFloat(portfolio.amount).toLocaleString()}</span>
+                <span>${Number(portfolio.amount).toLocaleString()}</span>
               </div>
             </div>
           </CardContent>
