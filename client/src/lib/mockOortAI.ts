@@ -18,65 +18,65 @@ export async function simulateAnalysis(walletAddress: string) {
         symbol: "VOO",
         name: "Vanguard S&P 500 ETF",
         percentage: tolerance === "low" ? 25 : tolerance === "medium" ? 30 : 35,
-        reason: "Broad US market exposure with low fees"
+        reason: "Based on your social media engagement with financial news and market analysis accounts, you show interest in broad market exposure. The S&P 500 ETF aligns with your preference for established companies frequently mentioned in your timeline."
       },
       {
         symbol: "VGK",
         name: "Vanguard FTSE Europe ETF",
         percentage: tolerance === "low" ? 10 : 15,
-        reason: "Geographic diversification through European markets"
+        reason: "Your interaction with European market news and following of EU-based analysts suggests potential interest in European market exposure. This ETF provides diversification into stable European economies."
       },
       // Bonds
       {
         symbol: "BND",
         name: "Vanguard Total Bond ETF",
         percentage: tolerance === "low" ? 30 : tolerance === "medium" ? 20 : 10,
-        reason: "Fixed income stability through diversified bonds"
+        reason: "Analysis of your risk tolerance and social media sentiment shows a preference for stability. Your engagement with content about passive income and wealth preservation aligns with bond allocation."
       },
       // Commodities
       {
         symbol: "GLD",
         name: "SPDR Gold Shares",
         percentage: 10,
-        reason: "Traditional hedge against market volatility"
+        reason: "Your recent interactions with posts about inflation hedging and following of commodity analysts indicate interest in gold. This allocation provides portfolio protection against market volatility you've expressed concern about."
       },
       {
         symbol: "SLV",
         name: "iShares Silver Trust",
         percentage: tolerance === "high" ? 5 : 0,
-        reason: "Industrial and precious metal exposure"
+        reason: "Given your engagement with industrial metals and technology manufacturing content, silver exposure aligns with your interest in both precious metals and industrial applications."
       },
       // Agriculture
       {
         symbol: "DBA",
         name: "Invesco DB Agriculture Fund",
         percentage: tolerance === "low" ? 5 : 7,
-        reason: "Exposure to agricultural commodities futures"
+        reason: "Your recent interactions with sustainable agriculture and food security content suggest interest in agricultural commodities. This fund provides exposure to essential agricultural futures markets."
       },
       {
         symbol: "VEGI",
         name: "iShares MSCI Global Agriculture",
         percentage: tolerance === "low" ? 5 : 8,
-        reason: "Global agriculture companies exposure"
+        reason: "Based on your follows of sustainable farming initiatives and agricultural technology companies, this ETF aligns with your interest in the future of agriculture and food production."
       },
       // Cryptocurrencies
       {
         symbol: "BTC",
         name: "Bitcoin",
         percentage: tolerance === "low" ? 5 : tolerance === "medium" ? 10 : 15,
-        reason: "Digital gold status and institutional adoption"
+        reason: "Analysis of your wallet history shows regular Bitcoin transactions and engagement with Bitcoin development discussions. Your social media activity indicates strong belief in Bitcoin as a store of value."
       },
       {
         symbol: "ETH",
         name: "Ethereum",
         percentage: tolerance === "low" ? 5 : tolerance === "medium" ? 8 : 12,
-        reason: "Smart contract platform with DeFi ecosystem"
+        reason: "Your wallet shows interaction with Ethereum DeFi protocols and NFT platforms. Your social engagement with Ethereum developers and DeFi projects suggests belief in the ecosystem's growth."
       },
       {
         symbol: "SOL",
         name: "Solana",
         percentage: tolerance === "high" ? 5 : 0,
-        reason: "High-performance blockchain for DeFi and NFTs"
+        reason: "Your recent interactions with Solana developers and enthusiasm about high-performance blockchains in your social posts indicate interest in next-generation blockchain platforms."
       }
     ].filter(asset => asset.percentage > 0) // Remove assets with 0% allocation
   };
@@ -93,11 +93,11 @@ export async function simulateAnalysis(walletAddress: string) {
       score: riskScore,
       tolerance,
       factors: [
-        "Social media sentiment analysis",
-        "Market correlation patterns",
-        "Risk tolerance assessment",
-        "Investment time horizon",
-        "Portfolio diversification metrics"
+        "Social media sentiment analysis of financial content",
+        "Wallet transaction patterns and DeFi engagement",
+        "Following patterns of market analysts and experts",
+        "Engagement with financial news and discussions",
+        "Historical investment behavior analysis"
       ]
     },
     recommendations
