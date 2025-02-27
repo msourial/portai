@@ -16,10 +16,13 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { User } from "@shared/schema";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { SiRobinhood } from "react-icons/si";
+import { Building2 } from "lucide-react"; // Using a more generic icon for IBKR
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
@@ -31,11 +34,90 @@ export default function AssetRecommendations({
   const { toast } = useToast();
   const [investmentAmount, setInvestmentAmount] = useState("");
   const [showAllocation, setShowAllocation] = useState(false);
+  const [selectedBroker, setSelectedBroker] = useState<"robinhood" | "ibkr" | null>(null);
+  const [isConnecting, setIsConnecting] = useState(false);
 
   const data = recommendations.assets.map((asset) => ({
     name: asset.symbol,
     value: asset.percentage,
   }));
+
+  const handleBrokerConnect = async (broker: "robinhood" | "ibkr") => {
+    setIsConnecting(true);
+    setSelectedBroker(broker);
+
+    // Simulate broker authentication popup
+    const width = 600;
+    const height = 600;
+    const left = window.innerWidth / 2 - width / 2;
+    const top = window.innerHeight / 2 - height / 2;
+
+    const popup = window.open(
+      "about:blank",
+      `Connect to ${broker === "robinhood" ? "Robinhood" : "IBKR"}`,
+      `width=${width},height=${height},left=${left},top=${top}`
+    );
+
+    if (popup) {
+      popup.document.write(`
+        <html>
+          <head>
+            <title>${broker === "robinhood" ? "Robinhood" : "IBKR"} Authentication</title>
+            <style>
+              body { 
+                font-family: system-ui; 
+                margin: 0; 
+                padding: 20px; 
+                background: ${broker === "robinhood" ? "#00C805" : "#d44d25"}; 
+                color: white; 
+              }
+              .container { text-align: center; margin-top: 50px; }
+              .logo { font-size: 48px; margin-bottom: 20px; }
+              .message { margin: 20px 0; }
+              .button { 
+                background: white; 
+                color: ${broker === "robinhood" ? "#00C805" : "#d44d25"}; 
+                border: none; 
+                padding: 10px 20px; 
+                border-radius: 20px; 
+                cursor: pointer; 
+              }
+              ul { text-align: left; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="logo">${broker === "robinhood" ? "Robinhood" : "IBKR"}</div>
+              <h2>Authorize portfolAI</h2>
+              <p class="message">This application will be able to:</p>
+              <ul>
+                <li>View your portfolio</li>
+                <li>Place trades on your behalf</li>
+                <li>Monitor order status</li>
+              </ul>
+              <button class="button" onclick="window.close()">Authorize App</button>
+            </div>
+          </body>
+        </html>
+      `);
+
+      // Check when popup is closed
+      const checkClosed = setInterval(() => {
+        if (popup.closed) {
+          clearInterval(checkClosed);
+          setIsConnecting(false);
+
+          toast({
+            title: "Success",
+            description: `Successfully connected to ${broker === "robinhood" ? "Robinhood" : "IBKR"}`,
+          });
+
+          // Show allocation after successful connection
+          setShowAllocation(true);
+        }
+      }, 500);
+    }
+  };
 
   const handleInvest = () => {
     const amount = parseFloat(investmentAmount);
@@ -47,7 +129,6 @@ export default function AssetRecommendations({
       });
       return;
     }
-    setShowAllocation(true);
   };
 
   return (
@@ -112,7 +193,7 @@ export default function AssetRecommendations({
             <DialogHeader>
               <DialogTitle>Investment Amount</DialogTitle>
               <DialogDescription>
-                Enter the total amount you want to invest in this portfolio
+                Enter the amount and connect your broker to invest in this portfolio
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 pt-4">
@@ -128,12 +209,38 @@ export default function AssetRecommendations({
                   placeholder="Enter amount"
                 />
               </div>
-              <Button onClick={handleInvest} className="w-full">
-                Calculate Allocation
-              </Button>
+
+              <div className="space-y-2">
+                <Label>Connect Broker</Label>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <Button
+                    onClick={() => handleBrokerConnect("robinhood")}
+                    className="w-full"
+                    variant="outline"
+                    disabled={isConnecting}
+                  >
+                    <SiRobinhood className="mr-2 h-4 w-4" style={{ color: '#00C805' }} />
+                    {isConnecting && selectedBroker === "robinhood"
+                      ? "Connecting..."
+                      : "Connect Robinhood"}
+                  </Button>
+
+                  <Button
+                    onClick={() => handleBrokerConnect("ibkr")}
+                    className="w-full"
+                    variant="outline"
+                    disabled={isConnecting}
+                  >
+                    <Building2 className="mr-2 h-4 w-4" style={{ color: '#d44d25' }} />
+                    {isConnecting && selectedBroker === "ibkr"
+                      ? "Connecting..."
+                      : "Connect IBKR"}
+                  </Button>
+                </div>
+              </div>
 
               {showAllocation && (
-                <div className="mt-4 space-y-2">
+                <div className="mt-4 space-y-4">
                   <h4 className="font-medium">Allocation Breakdown:</h4>
                   {recommendations.assets.map((asset) => (
                     <div
@@ -146,6 +253,13 @@ export default function AssetRecommendations({
                       </span>
                     </div>
                   ))}
+
+                  <Alert className="mt-4">
+                    <AlertDescription>
+                      Connected to {selectedBroker === "robinhood" ? "Robinhood" : "IBKR"}.
+                      Ready to execute trades based on the allocation above.
+                    </AlertDescription>
+                  </Alert>
                 </div>
               )}
             </div>
