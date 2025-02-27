@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FaTwitter, FaTelegram, FaDiscord, FaLinkedin, FaReddit, FaGithub, FaTiktok, FaInstagram, FaFacebook, FaYoutube } from "react-icons/fa";
+import { FaTelegram, FaDiscord, FaLinkedin, FaReddit, FaGithub, FaTiktok, FaInstagram, FaFacebook, FaYoutube } from "react-icons/fa";
+import { SiX } from "react-icons/si";
 
 type SocialPlatform = {
   name: string;
@@ -16,7 +17,7 @@ export default function SocialForm({ walletAddress }: { walletAddress?: string }
   const [loading, setLoading] = useState<string | null>(null);
 
   const socials: SocialPlatform[] = [
-    { name: "Twitter", icon: <FaTwitter />, color: "#1DA1F2", isEnabled: true },
+    { name: "X", icon: <SiX />, color: "#000000", isEnabled: true },
     { name: "Telegram", icon: <FaTelegram />, color: "#0088cc", isEnabled: true },
     { name: "Discord", icon: <FaDiscord />, color: "#5865F2", isEnabled: true },
     { name: "LinkedIn", icon: <FaLinkedin />, color: "#0A66C2", isEnabled: true },
@@ -36,7 +37,9 @@ export default function SocialForm({ walletAddress }: { walletAddress?: string }
         params.append('walletAddress', walletAddress);
       }
 
-      const response = await fetch(`/api/auth/${platform.toLowerCase()}?${params}`);
+      // For X (formerly Twitter), use lowercase 'twitter' in the API path
+      const apiPath = platform.toLowerCase() === 'x' ? 'twitter' : platform.toLowerCase();
+      const response = await fetch(`/api/auth/${apiPath}?${params}`);
       const data = await response.json();
 
       if (data.url) {
