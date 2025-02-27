@@ -92,10 +92,10 @@ export default function SocialForm({ walletAddress }: { walletAddress?: string }
         {socials.map((social) => (
           <Button
             key={social.name}
-            onClick={() => handleConnect(social.name)}
-            className="w-full flex items-center justify-center gap-2"
+            onClick={() => social.isEnabled && handleConnect(social.name)}
+            className={`w-full flex items-center justify-center gap-2 ${!social.isEnabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-accent'}`}
             variant="outline"
-            disabled={!social.isEnabled || loading === social.name}
+            disabled={loading !== null}
           >
             <span style={{ color: social.color }}>
               {social.icon}
