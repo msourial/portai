@@ -4,7 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FaTelegram, FaDiscord, FaLinkedin, FaReddit, FaGithub, FaTiktok, FaInstagram, FaFacebook, FaYoutube } from "react-icons/fa";
 import { SiX } from "react-icons/si";
-import { useNavigate } from "wouter";
+import RiskAnalysis from "./RiskAnalysis";
+import AssetRecommendations from "./AssetRecommendations";
+import { simulateAnalysis } from "@/lib/mockOortAI";
 
 type SocialPlatform = {
   name: string;
@@ -16,7 +18,7 @@ type SocialPlatform = {
 export default function SocialForm({ walletAddress }: { walletAddress?: string }) {
   const { toast } = useToast();
   const [loading, setLoading] = useState<string | null>(null);
-  const navigate = useNavigate();
+  const [analysis, setAnalysis] = useState<any>(null);
 
   const socials: SocialPlatform[] = [
     { name: "X", icon: <SiX />, color: "#000000", isEnabled: true },
@@ -94,17 +96,18 @@ export default function SocialForm({ walletAddress }: { walletAddress?: string }
         `);
 
         // Check when popup is closed
-        const checkClosed = setInterval(() => {
+        const checkClosed = setInterval(async () => {
           if (popup.closed) {
             clearInterval(checkClosed);
+            // Generate mock analysis
+            const mockData = await simulateAnalysis(walletAddress);
+            setAnalysis(mockData);
             setLoading(null);
-            // Simulate successful connection
+
             toast({
               title: "Success",
               description: "Successfully connected to X",
             });
-            // Navigate to dashboard with mock analysis
-            navigate(`/dashboard/${walletAddress}`);
           }
         }, 500);
       }
@@ -112,31 +115,40 @@ export default function SocialForm({ walletAddress }: { walletAddress?: string }
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-2xl font-bold">
-          Connect Your Social Media
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="grid gap-4 sm:grid-cols-2">
-        {socials.map((social) => (
-          <Button
-            key={social.name}
-            onClick={() => social.isEnabled && handleConnect(social.name)}
-            className={`w-full flex items-center justify-center gap-2 ${!social.isEnabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-            variant="outline"
-            disabled={!social.isEnabled || loading !== null}
-          >
-            <span style={{ color: social.color }}>
-              {social.icon}
-            </span>
-            {loading === social.name
-              ? "Connecting..."
-              : `Connect ${social.name}`}
-            {!social.isEnabled && " (Coming Soon)"}
-          </Button>
-        ))}
-      </CardContent>
-    </Card>
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold">
+            Connect Your Social Media
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-4 sm:grid-cols-2">
+          {socials.map((social) => (
+            <Button
+              key={social.name}
+              onClick={() => social.isEnabled && handleConnect(social.name)}
+              className={`w-full flex items-center justify-center gap-2 ${!social.isEnabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+              variant="outline"
+              disabled={!social.isEnabled || loading !== null}
+            >
+              <span style={{ color: social.color }}>
+                {social.icon}
+              </span>
+              {loading === social.name
+                ? "Connecting..."
+                : `Connect ${social.name}`}
+              {!social.isEnabled && " (Coming Soon)"}
+            </Button>
+          ))}
+        </CardContent>
+      </Card>
+
+      {analysis && (
+        <div className="space-y-6">
+          <RiskAnalysis riskProfile={analysis.riskProfile} />
+          <AssetRecommendations recommendations={analysis.recommendations} />
+        </div>
+      )}
+    </div>
   );
 }
