@@ -87,15 +87,12 @@ export default function Portfolio() {
                             style={{ backgroundColor: COLORS[i % COLORS.length] }}
                           />
                           <span className="font-medium">
-                            {asset.name} ({asset.symbol})
+                            {asset.name} ({asset.symbol}) - {asset.percentage}%
                           </span>
                         </div>
                         <div className="text-right">
                           <div className="font-medium">
                             ${asset.amount.toLocaleString()}
-                          </div>
-                          <div className="text-sm text-muted-foreground">
-                            {asset.percentage}%
                           </div>
                         </div>
                       </div>
