@@ -41,7 +41,13 @@ export default function SocialForm({ walletAddress }: { walletAddress?: string }
       const apiPath = platform.toLowerCase() === 'x' ? 'twitter' : platform.toLowerCase();
 
       console.log(`Connecting to ${platform}...`);
-      const response = await fetch(`/api/auth/${apiPath}?${params}`);
+      const response = await fetch(`/api/auth/${apiPath}?${params}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        },
+        credentials: 'include'
+      });
 
       if (!response.ok) {
         const errorData = await response.text();
@@ -56,6 +62,9 @@ export default function SocialForm({ walletAddress }: { walletAddress?: string }
       const data = await response.json();
 
       if (data.url) {
+        // Add a small delay before redirecting to ensure the state is saved
+        await new Promise(resolve => setTimeout(resolve, 500));
+        // Open in same window
         window.location.href = data.url;
       } else {
         throw new Error(`Failed to get ${platform} auth URL`);

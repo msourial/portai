@@ -1,4 +1,5 @@
 import { TwitterApi } from "twitter-api-v2";
+import { generateKeyPairSync } from "crypto";
 
 if (!process.env.TWITTER_API_KEY || !process.env.TWITTER_API_SECRET) {
   throw new Error("Twitter API credentials not found");
@@ -14,26 +15,25 @@ const REPLIT_DOMAIN = process.env.REPL_SLUG && process.env.REPL_OWNER ?
 
 const CALLBACK_URL = `${REPLIT_DOMAIN}/api/auth/twitter/callback`;
 
-const client = new TwitterApi({ 
-  clientId: CLIENT_ID, 
+// Initialize client with OAuth 2.0 credentials
+const client = new TwitterApi({
+  clientId: CLIENT_ID,
   clientSecret: CLIENT_SECRET
 });
 
 export async function getAuthLink(state: string) {
   try {
+    // Generate OAuth 2.0 URL with PKCE
     const { url, codeVerifier, state: authState } = await client.generateOAuth2AuthLink(
       CALLBACK_URL,
-      { 
-        scope: [
-          "users.read",
-          "tweet.read",
-          "follows.read",
-          "offline.access"
-        ]
+      {
+        scope: ['tweet.read', 'users.read', 'offline.access'],
+        state: state,
       }
     );
 
     console.log("Authorization URL generated:", {
+      clientId: CLIENT_ID,
       callbackUrl: CALLBACK_URL,
       authUrl: url
     });

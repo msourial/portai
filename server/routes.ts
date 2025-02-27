@@ -18,6 +18,12 @@ export async function registerRoutes(app: Express) {
   // Twitter OAuth Routes
   app.get("/api/auth/twitter", async (req, res) => {
     try {
+      if (!process.env.TWITTER_API_KEY || !process.env.TWITTER_API_SECRET) {
+        console.error("Twitter API credentials not found");
+        res.status(503).json({ error: "Twitter API not configured" });
+        return;
+      }
+
       const state = nanoid();
       const { url, codeVerifier } = await getAuthLink(state);
 
