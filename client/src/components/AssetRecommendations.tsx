@@ -205,43 +205,23 @@ export default function AssetRecommendations({
                   min="0"
                   step="0.01"
                   value={investmentAmount}
-                  onChange={(e) => setInvestmentAmount(e.target.value)}
+                  onChange={(e) => {
+                    setInvestmentAmount(e.target.value);
+                    const amount = parseFloat(e.target.value);
+                    if (!isNaN(amount) && amount > 0) {
+                      setShowAllocation(true); // Show allocation immediately
+                      setSelectedBroker(null); // Reset selected broker if amount changes
+                    } else {
+                      setShowAllocation(false); // Hide allocation if invalid amount
+                    }
+                  }}
                   placeholder="Enter amount"
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label>Connect Broker</Label>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <Button
-                    onClick={() => handleBrokerConnect("robinhood")}
-                    className="w-full"
-                    variant="outline"
-                    disabled={isConnecting}
-                  >
-                    <SiRobinhood className="mr-2 h-4 w-4" style={{ color: '#00C805' }} />
-                    {isConnecting && selectedBroker === "robinhood"
-                      ? "Connecting..."
-                      : "Connect Robinhood"}
-                  </Button>
-
-                  <Button
-                    onClick={() => handleBrokerConnect("ibkr")}
-                    className="w-full"
-                    variant="outline"
-                    disabled={isConnecting}
-                  >
-                    <Building2 className="mr-2 h-4 w-4" style={{ color: '#d44d25' }} />
-                    {isConnecting && selectedBroker === "ibkr"
-                      ? "Connecting..."
-                      : "Connect IBKR"}
-                  </Button>
-                </div>
-              </div>
-
-              {showAllocation && (
-                <div className="mt-4 space-y-4">
-                  <h4 className="font-medium">Allocation Breakdown:</h4>
+              {investmentAmount && !isNaN(parseFloat(investmentAmount)) && parseFloat(investmentAmount) > 0 && (
+                <div className="space-y-4">
+                  <h4 className="font-medium">Investment Breakdown:</h4>
                   {recommendations.assets.map((asset) => (
                     <div
                       key={asset.symbol}
@@ -253,14 +233,45 @@ export default function AssetRecommendations({
                       </span>
                     </div>
                   ))}
-
-                  <Alert className="mt-4">
-                    <AlertDescription>
-                      Connected to {selectedBroker === "robinhood" ? "Robinhood" : "IBKR"}.
-                      Ready to execute trades based on the allocation above.
-                    </AlertDescription>
-                  </Alert>
                 </div>
+              )}
+
+              <div className="space-y-2">
+                <Label>Connect Broker to Execute</Label>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <Button
+                    onClick={() => handleBrokerConnect("robinhood")}
+                    className="w-full"
+                    variant="outline"
+                    disabled={isConnecting || !investmentAmount}
+                  >
+                    <SiRobinhood className="mr-2 h-4 w-4" style={{ color: '#00C805' }} />
+                    {isConnecting && selectedBroker === "robinhood"
+                      ? "Connecting..."
+                      : "Connect Robinhood"}
+                  </Button>
+
+                  <Button
+                    onClick={() => handleBrokerConnect("ibkr")}
+                    className="w-full"
+                    variant="outline"
+                    disabled={isConnecting || !investmentAmount}
+                  >
+                    <Building2 className="mr-2 h-4 w-4" style={{ color: '#d44d25' }} />
+                    {isConnecting && selectedBroker === "ibkr"
+                      ? "Connecting..."
+                      : "Connect IBKR"}
+                  </Button>
+                </div>
+              </div>
+
+              {showAllocation && selectedBroker && (
+                <Alert>
+                  <AlertDescription>
+                    Connected to {selectedBroker === "robinhood" ? "Robinhood" : "IBKR"}.
+                    Ready to execute trades based on the allocation above.
+                  </AlertDescription>
+                </Alert>
               )}
             </div>
           </DialogContent>
