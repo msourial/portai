@@ -18,15 +18,15 @@ export default function SocialForm({ walletAddress }: { walletAddress?: string }
 
   const socials: SocialPlatform[] = [
     { name: "X", icon: <SiX />, color: "#000000", isEnabled: true },
-    { name: "Telegram", icon: <FaTelegram />, color: "#0088cc", isEnabled: true },
-    { name: "Discord", icon: <FaDiscord />, color: "#5865F2", isEnabled: true },
-    { name: "LinkedIn", icon: <FaLinkedin />, color: "#0A66C2", isEnabled: true },
-    { name: "Reddit", icon: <FaReddit />, color: "#FF4500", isEnabled: true },
-    { name: "GitHub", icon: <FaGithub />, color: "#333", isEnabled: true },
-    { name: "TikTok", icon: <FaTiktok />, color: "#000000", isEnabled: true },
-    { name: "Instagram", icon: <FaInstagram />, color: "#E4405F", isEnabled: true },
-    { name: "Facebook", icon: <FaFacebook />, color: "#1877F2", isEnabled: true },
-    { name: "YouTube", icon: <FaYoutube />, color: "#FF0000", isEnabled: true },
+    { name: "Telegram", icon: <FaTelegram />, color: "#0088cc", isEnabled: false },
+    { name: "Discord", icon: <FaDiscord />, color: "#5865F2", isEnabled: false },
+    { name: "LinkedIn", icon: <FaLinkedin />, color: "#0A66C2", isEnabled: false },
+    { name: "Reddit", icon: <FaReddit />, color: "#FF4500", isEnabled: false },
+    { name: "GitHub", icon: <FaGithub />, color: "#333", isEnabled: false },
+    { name: "TikTok", icon: <FaTiktok />, color: "#000000", isEnabled: false },
+    { name: "Instagram", icon: <FaInstagram />, color: "#E4405F", isEnabled: false },
+    { name: "Facebook", icon: <FaFacebook />, color: "#1877F2", isEnabled: false },
+    { name: "YouTube", icon: <FaYoutube />, color: "#FF0000", isEnabled: false },
   ];
 
   const handleConnect = async (platform: string) => {
@@ -39,6 +39,8 @@ export default function SocialForm({ walletAddress }: { walletAddress?: string }
 
       // For X (formerly Twitter), use lowercase 'twitter' in the API path
       const apiPath = platform.toLowerCase() === 'x' ? 'twitter' : platform.toLowerCase();
+
+      console.log(`Connecting to ${platform}...`);
       const response = await fetch(`/api/auth/${apiPath}?${params}`);
       const data = await response.json();
 
@@ -48,6 +50,7 @@ export default function SocialForm({ walletAddress }: { walletAddress?: string }
         throw new Error(`Failed to get ${platform} auth URL`);
       }
     } catch (error) {
+      console.error(`Error connecting to ${platform}:`, error);
       toast({
         variant: "destructive",
         title: "Error",
@@ -70,19 +73,17 @@ export default function SocialForm({ walletAddress }: { walletAddress?: string }
           <Button
             key={social.name}
             onClick={() => handleConnect(social.name)}
-            className="w-full"
+            className="w-full flex items-center justify-center gap-2"
             variant="outline"
             disabled={!social.isEnabled || loading === social.name}
-            style={{
-              "--social-color": social.color,
-            } as React.CSSProperties}
           >
-            <span className="mr-2" style={{ color: social.color }}>
+            <span style={{ color: social.color }}>
               {social.icon}
             </span>
             {loading === social.name
               ? "Connecting..."
               : `Connect ${social.name}`}
+            {!social.isEnabled && " (Coming Soon)"}
           </Button>
         ))}
       </CardContent>
