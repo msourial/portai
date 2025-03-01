@@ -2,14 +2,12 @@ import { User } from "@shared/schema";
 
 export class OortAIService {
   private config: {
-    agentId: string;
-    agentEndpoint: string;
+    agentUrl: string;
   };
 
   constructor() {
     this.config = {
-      agentId: "G1tdJoZ1_0eRR51ilOVID/8uNKUksu_0gcCSkpMM5HI",
-      agentEndpoint: "https://console.oortech.com/api/public/agent"  
+      agentUrl: "https://console.oortech.com/agent/G1tdJoZ1_0eRR51ilOVID/8uNKUksu_0gcCSkpMM5HI"  
     };
   }
 
@@ -17,7 +15,7 @@ export class OortAIService {
     try {
       console.log("Sending message to Oort AI agent:", message);
 
-      const response = await fetch(`${this.config.agentEndpoint}/${this.config.agentId}`, {
+      const response = await fetch(this.config.agentUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
