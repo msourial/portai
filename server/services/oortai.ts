@@ -9,7 +9,7 @@ export class OortAIService {
   constructor() {
     this.config = {
       agentId: "G1tdJoZ1_0eRR51ilOVID/8uNKUksu_0gcCSkpMM5HI",
-      agentEndpoint: "https://console.oortech.com/api/agent"  // Updated to use API endpoint
+      agentEndpoint: "https://console.oortech.com/api/public/agent"  
     };
   }
 
@@ -21,11 +21,9 @@ export class OortAIService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
         },
         body: JSON.stringify({
-          message: message,
-          type: 'chat'
+          query: message
         })
       });
 
@@ -35,6 +33,7 @@ export class OortAIService {
       }
 
       const data = await response.json();
+      console.log("Oort AI response:", data);
 
       if (!data || !data.response) {
         console.error("Invalid response format:", data);
