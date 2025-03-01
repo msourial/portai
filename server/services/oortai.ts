@@ -20,12 +20,12 @@ export class OortAIService {
       console.log("Sending message to Oort AI agent:", message);
 
       // For now using fetch directly, can be enhanced with axios or other HTTP client
-      const response = await fetch(`${this.config.agentEndpoint}/${this.config.agentId}/chat`, {
-        method: 'POST',
+      const response = await fetch(`${this.config.agentEndpoint}/${this.config.agentId}`, {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ message })
+          'Accept': 'application/json'
+        }
       });
 
       if (!response.ok) {
@@ -33,6 +33,12 @@ export class OortAIService {
       }
 
       const data = await response.json();
+
+      // If no response data, provide a fallback
+      if (!data || !data.response) {
+        return "I understand you're asking about investments. However, I'm currently having trouble accessing detailed information. Could you please try asking your question again?";
+      }
+
       return data.response;
 
     } catch (error) {
