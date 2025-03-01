@@ -15,14 +15,15 @@ export class OortAIService {
     try {
       console.log("Sending message to Oort AI agent:", message);
 
-      const response = await fetch(this.config.agentUrl, {
-        method: 'POST',
+      // Create URL with query parameter
+      const url = new URL(this.config.agentUrl);
+      url.searchParams.append('query', message);
+
+      const response = await fetch(url.toString(), {
+        method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          query: message
-        })
+          'Accept': 'application/json'
+        }
       });
 
       if (!response.ok) {
