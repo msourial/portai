@@ -6,6 +6,7 @@ import Home from "@/pages/home";
 import Dashboard from "@/pages/dashboard";
 import Portfolio from "@/pages/portfolio";
 import NotFound from "@/pages/not-found";
+import ChatDialog from "@/components/ChatDialog";
 
 function Router() {
   return (
@@ -24,6 +25,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Router />
+      <ChatDialog />
       <Toaster />
     </QueryClientProvider>
   );

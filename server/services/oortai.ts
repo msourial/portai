@@ -406,7 +406,7 @@ export class OortAIService {
   async analyzeWallet(walletAddress: string): Promise<WalletAnalysis> {
     // TO BE IMPLEMENTED: Call Oort AI API with the agent config
     console.log("Analyzing wallet using config:", this.config.agentConfig);
-     // Replace this with actual API call using this.config.agentConfig
+    // Replace this with actual API call using this.config.agentConfig
     return {
       transactionVolume: 0,
       holdingPeriod: 0,
@@ -420,6 +420,22 @@ export class OortAIService {
     console.log("Generating recommendations using config:", this.config.agentConfig);
     // Replace this with actual API call using this.config.agentConfig
     return {};
+  }
+
+  async handleChat(message: string): Promise<string> {
+    // TO BE IMPLEMENTED: Call Oort AI agent chat API
+    console.log("Handling chat message using config:", this.config.agentConfig);
+
+    // Replace this with actual API call to Oort AI agent
+    // For now, return a mock response
+    const mockResponses = [
+      "Based on your social media activity and wallet analysis, I recommend diversifying into more stable assets.",
+      "Your current portfolio shows a high risk tolerance. Consider adding some fixed-income investments for balance.",
+      "Looking at market conditions and your investment style, you might want to explore DeFi opportunities.",
+      "I notice you're interested in tech stocks. Have you considered adding some international exposure?",
+    ];
+
+    return mockResponses[Math.floor(Math.random() * mockResponses.length)];
   }
 }
 

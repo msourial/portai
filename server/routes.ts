@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { insertUserSchema } from "@shared/schema";
 import { z } from "zod";
 import { simulateAnalysis } from "../client/src/lib/mockOortAI";
+import { oortAI } from "./services/oortai";
 
 export async function registerRoutes(app: Express) {
   // User management routes
@@ -44,6 +45,18 @@ export async function registerRoutes(app: Express) {
     } catch (error) {
       console.error("Error getting user data:", error);
       res.status(500).json({ error: "Failed to get user data" });
+    }
+  });
+
+  // Chat endpoint
+  app.post("/api/chat", async (req, res) => {
+    try {
+      const message = z.string().parse(req.body.message);
+      const response = await oortAI.handleChat(message);
+      res.json({ response });
+    } catch (error) {
+      console.error("Chat error:", error);
+      res.status(400).json({ error: "Invalid chat message" });
     }
   });
 
