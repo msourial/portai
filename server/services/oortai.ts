@@ -7,7 +7,7 @@ export class OortAIService {
 
   constructor() {
     this.config = {
-      agentUrl: "https://console.oortech.com/agent/G1tdJoZ1_0eRR51ilOVID/8uNKUksu_0gcCSkpMM5HI"  
+      agentUrl: "https://api.oortech.com/agent/G1tdJoZ1_0eRR51ilOVID/8uNKUksu_0gcCSkpMM5HI"  // Changed to API domain
     };
   }
 
@@ -22,12 +22,15 @@ export class OortAIService {
       const response = await fetch(url.toString(), {
         method: 'GET',
         headers: {
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest' // Add this to ensure JSON response
         }
       });
 
       if (!response.ok) {
         console.error(`API Error: ${response.status} ${response.statusText}`);
+        const responseText = await response.text();
+        console.error("Response body:", responseText);
         throw new Error(`Failed to get response from AI agent (${response.status})`);
       }
 
