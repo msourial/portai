@@ -1,12 +1,10 @@
 import { User } from "@shared/schema";
 
-interface OortAIConfig {
-  agentId: string;
-  agentEndpoint: string;
-}
-
 export class OortAIService {
-  private config: OortAIConfig;
+  private config: {
+    agentId: string;
+    agentEndpoint: string;
+  };
 
   constructor() {
     this.config = {
