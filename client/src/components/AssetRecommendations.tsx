@@ -90,7 +90,7 @@ export default function AssetRecommendations({
           <body>
             <div class="container">
               <div class="logo">${broker === "robinhood" ? "Robinhood" : "IBKR"}</div>
-              <h2>Authorize portfolAI</h2>
+              <h2>Authorize portAI</h2>
               <p class="message">This application will be able to:</p>
               <ul>
                 <li>View your portfolio</li>

@@ -12,7 +12,7 @@ export default function Home() {
         <Card>
           <CardHeader>
             <CardTitle className="text-3xl font-bold text-center text-primary">
-              portfolAI
+              portAI
             </CardTitle>
             <p className="text-center text-muted-foreground mt-2">
               Your AI-Powered Investment Advisor

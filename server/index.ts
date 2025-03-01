@@ -31,7 +31,7 @@ const SessionStore = MemoryStore(session);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(session({
-  secret: "portfolai-session-secret",
+  secret: "portai-session-secret",
   resave: false,
   saveUninitialized: false,
   store: new SessionStore({
