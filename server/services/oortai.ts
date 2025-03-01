@@ -7,7 +7,7 @@ export class OortAIService {
 
   constructor() {
     this.config = {
-      agentUrl: "https://api.oortech.com/agent/G1tdJoZ1_0eRR51ilOVID/8uNKUksu_0gcCSkpMM5HI"  // Changed to API domain
+      agentUrl: "https://console.oortech.com/agent/G1tdJoZ1_0eRR51ilOVID/8uNKUksu_0gcCSkpMM5HI"  // Changed back to console domain
     };
   }
 
