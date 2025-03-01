@@ -2,9 +2,12 @@
 
 portAI is a dynamic fintech platform that leverages AI to transform investment strategies through multi-broker integration and intelligent data analysis.
 
-## Features
+## 🌟 Key Features
 
-- 🤖 AI-powered investment recommendations
+- 🤖 **Oort AI Investment Advisor** - Intelligent chat-based investment recommendations powered by Oort AI
+  - Real-time connection status indication
+  - Interactive chat interface
+  - Personalized investment strategies
 - 📊 Real-time portfolio tracking
 - 🔗 Web3 wallet integrations (MetaMask, Coinbase)
 - 🏦 Multi-broker connectivity (Robinhood, IBKR)
@@ -19,6 +22,7 @@ portAI is a dynamic fintech platform that leverages AI to transform investment s
 - Routing: Wouter
 - Charts: Recharts
 - Web3: MetaMask + Coinbase SDK
+- **AI Integration: Oort AI Agent**
 
 ## Getting Started
 
@@ -26,6 +30,7 @@ portAI is a dynamic fintech platform that leverages AI to transform investment s
 
 - Node.js 18+
 - npm or yarn
+- Oort AI agent public link (for AI advisor functionality)
 
 ### Installation
 
@@ -46,7 +51,11 @@ cp .env.example .env
 # Edit .env with your API keys
 ```
 
-4. Start the development server
+4. Configure Oort AI Agent
+- Get your public shareable agent link from Oort Console
+- Update the agent URL in `server/services/oortai.ts`
+
+5. Start the development server
 ```bash
 npm run dev
 ```
@@ -59,15 +68,34 @@ The application will be available at `http://localhost:5000`
 portai/
 ├── client/              # Frontend application
 │   ├── src/
-│   │   ├── components/  # React components
+│   │   ├── components/  
+│   │   │   ├── AIStatusIndicator.tsx  # Oort AI connection status
+│   │   │   ├── ChatDialog.tsx         # Oort AI chat interface
+│   │   │   └── ...                    # Other React components
 │   │   ├── hooks/      # Custom React hooks
 │   │   ├── lib/        # Utility functions
 │   │   └── pages/      # Page components
 ├── server/             # Backend application
-│   ├── services/       # Business logic
+│   ├── services/       
+│   │   ├── oortai.ts   # Oort AI service integration
+│   │   └── ...         # Other services
 │   └── routes.ts       # API routes
 └── shared/            # Shared types and utilities
 ```
+
+## AI Investment Advisor
+
+The AI Investment Advisor feature is powered by Oort AI, providing:
+- Real-time investment recommendations
+- Portfolio analysis
+- Market insights
+- Interactive chat interface with connection status monitoring
+
+To customize the AI advisor:
+1. Visit your Oort Console
+2. Configure your AI agent settings
+3. Get your public shareable link
+4. Update the agent URL in the application
 
 ## Contributing
 
