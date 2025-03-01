@@ -20,21 +20,29 @@ export default function AIStatusIndicator({ lastResponse, isLoading }: AIStatusI
     }
   }, [lastResponse, isLoading]);
 
+  if (status === 'error') {
+    return (
+      <Badge 
+        variant="destructive" 
+        className="absolute top-2 right-2 bg-red-500/15 text-red-500 border border-red-500/20"
+      >
+        Connection Error
+      </Badge>
+    );
+  }
+
   return (
     <div className="flex items-center gap-2">
       <Badge 
-        variant={status === 'connected' ? "default" : status === 'error' ? "destructive" : "secondary"}
+        variant={status === 'connected' ? "default" : "secondary"}
         className="flex items-center gap-1"
       >
         {status === 'loading' && <Loader2 className="h-3 w-3 animate-spin" />}
         <div className={`h-2 w-2 rounded-full ${
           status === 'connected' ? 'bg-green-500' : 
-          status === 'error' ? 'bg-red-500' : 
           'bg-yellow-500'
         }`} />
-        {status === 'connected' ? 'AI Connected' : 
-         status === 'error' ? 'Connection Error' : 
-         'Connecting...'}
+        {status === 'connected' ? 'AI Connected' : 'Connecting...'}
       </Badge>
     </div>
   );
