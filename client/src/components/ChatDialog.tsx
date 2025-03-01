@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageSquare, Loader2 } from "lucide-react";
+import AIStatusIndicator from "./AIStatusIndicator";
 
 interface Message {
   role: "user" | "assistant";
@@ -20,6 +21,7 @@ export default function ChatDialog() {
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [lastResponse, setLastResponse] = useState<string | null>(messages[0].content);
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -45,14 +47,18 @@ export default function ChatDialog() {
       if (!response.ok) throw new Error("Failed to get response");
 
       const data = await response.json();
-      setMessages((prev) => [...prev, { role: "assistant", content: data.response }]);
+      const aiResponse = data.response;
+      setLastResponse(aiResponse);
+      setMessages((prev) => [...prev, { role: "assistant", content: aiResponse }]);
     } catch (error) {
       console.error("Chat error:", error);
+      const errorMessage = "Sorry, I encountered an error. Please try again later.";
+      setLastResponse(errorMessage);
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
-          content: "Sorry, I encountered an error. Please try again later.",
+          content: errorMessage,
         },
       ]);
     } finally {
@@ -73,8 +79,9 @@ export default function ChatDialog() {
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
+          <DialogHeader className="flex flex-row items-center justify-between">
             <DialogTitle>Chat with Your AI Advisor</DialogTitle>
+            <AIStatusIndicator lastResponse={lastResponse} isLoading={isLoading} />
           </DialogHeader>
           <div className="flex flex-col gap-4 h-[60vh]">
             <ScrollArea className="flex-1 pr-4">
